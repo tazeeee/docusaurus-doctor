@@ -1,12 +1,12 @@
 #!/bin/bash
 
 readonly CONFIG=/usr/bin/doctor/config.sh
-readonly defmd=--md*
 
 if [ -f $CONFIG ]; then
     source $CONFIG
+    readonly defmd=${COMMENT}md*
     for script in $SCRIPTS/*/; do
-        for file in $script*.lua; do
+        for file in $script*.$EXT; do
             trim=${#script}
             doc=${file: $trim}
             filepath=$DOCS/${doc:0:-4}.md
@@ -28,6 +28,10 @@ else
     read docsPath
     printf "\nWhat is the (FULL) directory path to your scripts? "
     read scriptsPath
+    printf "\nWhat is the file extension you want to document for? "
+    read extension
+    printf "\nHow do you comment in that language? "
+    read comment
     printf "\n"
-    printf "readonly SCRIPTS=$scriptsPath\nreadonly DOCS=$docsPath" > $CONFIG
+    printf "readonly SCRIPTS=$scriptsPath\nreadonly DOCS=$docsPath\nreadonly COMMENT=$comment\nreadonly EXT=$extension" > $CONFIG
 fi
