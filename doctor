@@ -1,0 +1,33 @@
+#!/bin/bash
+
+readonly CONFIG=/usr/bin/doctor/config.sh
+readonly defmd=--md*
+
+if [ -f $CONFIG ]; then
+    source $CONFIG
+    for script in $SCRIPTS/*/; do
+        for file in $script*.lua; do
+            trim=${#script}
+            doc=${file: $trim}
+            filepath=$DOCS/${doc:0:-4}.md
+            if [ -f $filepath ]; then
+                rm -rf $filepath
+            fi
+            while read line; do
+                if [[ $line = $defmd ]]; then
+                    markdown=${line: ${#defmd}-1}
+                    echo $markdown >> $filepath
+                fi
+            done < $file
+        done
+    done
+else
+    echo "Looks like it's your first time! We'll have to configure some things first."
+    sleep 1
+    printf "What is the (FULL) directory path to your docusaurus docs? "
+    read docsPath
+    printf "\nWhat is the (FULL) directory path to your scripts? "
+    read scriptsPath
+    printf "\n"
+    printf "readonly SCRIPTS=$scriptsPath\nreadonly DOCS=$docsPath" > $CONFIG
+fi
